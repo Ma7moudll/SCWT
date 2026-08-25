@@ -1,0 +1,24 @@
+# Flutter
+.dart_tool/
+build/
+.flutter-plugins*
+*.iml
+.idea/
+
+# Python (backend / ai-service / hardware-simulator)
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.db
+
+# PlatformIO
+.pio/
+
+# env & secrets
+.env
+.env.*
+*.passwd
+
+# OS
+.DS_Store

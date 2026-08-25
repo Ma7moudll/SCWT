@@ -1,0 +1,10 @@
+# Training-only dependencies (not needed at serving time; the served ONNX
+# model only requires onnxruntime from requirements.txt).
+# Install into the project venv:  pip install -r requirements-training.txt
+torch>=2.1
+torchvision>=0.16
+scikit-learn>=1.4
+matplotlib>=3.8
+onnxruntime>=1.18
+# torch 2.x ONNX export ("legacy" TorchScript exporter)
+onnx>=1.16

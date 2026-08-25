@@ -1,0 +1,25 @@
+{
+  "temperature": 0.7902453535511821,
+  "fitted_on": {
+    "source": "simulated-station-pilot",
+    "split": "val",
+    "root": "data/station_capture_splits/val",
+    "n": 720,
+    "model": "models/model.onnx"
+  },
+  "before": {
+    "ece": 0.04730897487865553,
+    "brier": 0.16420455276966095,
+    "nll": 0.2961663007736206,
+    "accuracy": 0.8833333333333333,
+    "mean_confidence": 0.8597334027290344
+  },
+  "after": {
+    "ece": 0.0252225152734253,
+    "brier": 0.16478346288204193,
+    "nll": 0.286239355802536,
+    "accuracy": 0.8833333333333333,
+    "mean_confidence": 0.8933595418930054
+  },
+  "timestamp": "2026-08-17T16:54:03+00:00"
+}

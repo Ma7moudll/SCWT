@@ -1,0 +1,17 @@
+{
+  "high_conf_plastic.png": {
+    "confidence": 0.9988791346549988,
+    "predicted_class": "plastic",
+    "source": "plastic286.jpg"
+  },
+  "medium_conf.png": {
+    "confidence": 0.6944118738174438,
+    "predicted_class": "other",
+    "source": "glass375.jpg"
+  },
+  "low_conf.png": {
+    "confidence": 0.47724640369415283,
+    "predicted_class": "plastic",
+    "source": "synthetic:grey"
+  }
+}

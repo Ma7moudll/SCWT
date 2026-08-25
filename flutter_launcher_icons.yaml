@@ -1,0 +1,16 @@
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#16834f"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  min_sdk_android: 21
+
+flutter_native_splash:
+  color: "#19b957"
+  image: "assets/icon/splash_logo.png"
+  android: true
+  ios: false
+  android_12:
+    color: "#19b957"
+    image: "assets/icon/splash_logo.png"

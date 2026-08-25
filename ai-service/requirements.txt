@@ -1,0 +1,9 @@
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pillow>=10.0
+numpy>=1.26
+scipy>=1.13
+pydantic-settings>=2.5
+python-multipart>=0.0.12
+# Runtime inference backend (real classifier):
+onnxruntime>=1.18
