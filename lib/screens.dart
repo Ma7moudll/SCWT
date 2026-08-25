@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'api/app_config.dart';
 import 'api/api_client.dart';
 import 'api/backend_gateway.dart';
+import 'api/contract.dart' show BackendReward, rewardIcon;
 import 'app_flow_nav.dart';
 import 'badges.dart';
 import 'impact.dart';
@@ -1561,7 +1562,44 @@ class _RewardsBody extends StatefulWidget {
 }
 
 class _RewardsBodyState extends State<_RewardsBody> {
-  Future<void> _confirmRedemption(
+  // Production mode: the catalog and balances come from the Ecolamp backend;
+  // redemption is a server-side atomic deduction. Demo mode: local catalog.
+  List<BackendReward>? _catalog;
+  String? _loadError;
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (AppConfig.isProduction) _loadCatalog();
+  }
+
+  Future<void> _loadCatalog() async {
+    setState(() => _loading = true);
+    try {
+      final cat = await BackendGateway.instance.fetchRewards();
+      if (!mounted) return;
+      setState(() {
+        _catalog = cat.rewards;
+        _loadError = null;
+        _loading = false;
+      });
+      await AppStore.instance.updateBackendPoints(cat.balance);
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          _loadError = e.message;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  Future<void> _confirmRedemptionOption(
     BuildContext context,
     RewardOption reward,
   ) async {
@@ -1630,6 +1668,153 @@ class _RewardsBodyState extends State<_RewardsBody> {
     }
   }
 
+  /// PRODUCTION: POST /rewards/{id}/redeem — the BACKEND validates the
+  /// balance and deducts atomically. The client never computes the result.
+  Future<void> _confirmRedemptionBackend(
+    BuildContext context,
+    BackendReward reward,
+  ) async {
+    if (AppStore.instance.points < reward.pointsCost) {
+      showToastError(
+        context,
+        'You need ${reward.pointsCost - AppStore.instance.points} more EcoPoints for this reward.',
+      );
+      return;
+    }
+    String? destination;
+    if (reward.requiresDestination) {
+      destination = await showDialog<String>(
+        context: context,
+        builder: (ctx) {
+          final controller = TextEditingController();
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              'Redeem ${reward.name}?',
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${reward.valueLabel} — ${reward.provider}.\nEnter the mobile number or handle that should receive it:',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.mutedForeground,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    hintText: 'e.g. 01001234567',
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: AppColors.mutedForeground,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+                child: const Text(
+                  'Confirm',
+                  style: TextStyle(
+                    color: AppColors.darkGreen,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+      if (destination == null || destination.isEmpty) return; // cancelled
+    } else {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Redeem ${reward.pointsCost} EcoPoints?',
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+          ),
+          content: Text(
+            'Confirm to redeem ${reward.name} — ${reward.valueLabel}.',
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.mutedForeground,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: AppColors.mutedForeground,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text(
+                'Confirm',
+                style: TextStyle(
+                  color: AppColors.darkGreen,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+
+    try {
+      final balance = await BackendGateway.instance.redeemReward(
+        rewardId: reward.id,
+        destination: destination,
+      );
+      if (!context.mounted) return;
+      await AppStore.instance.updateBackendPoints(balance);
+      if (!context.mounted) return;
+      setState(() {}); // refresh balance display
+      showToast(context, 'Redeemed ${reward.name} — ${reward.valueLabel}');
+    } on ApiException catch (e) {
+      if (context.mounted) showToastError(context, e.message);
+    } catch (_) {
+      if (context.mounted) {
+        showToastError(
+          context,
+          'Cannot reach Ecolamp right now. Please try again.',
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final points = AppStore.instance.points;
@@ -1659,6 +1844,14 @@ class _RewardsBodyState extends State<_RewardsBody> {
         const SizedBox(width: 48),
       ],
     );
+
+    final Widget catalogSection;
+    if (AppConfig.isProduction) {
+      catalogSection = _backendCatalogSection(points);
+    } else {
+      catalogSection = _demoCatalogSection(context, points);
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
       child: Column(
@@ -1719,20 +1912,7 @@ class _RewardsBodyState extends State<_RewardsBody> {
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    for (var i = 0; i < rewardCatalog.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 7),
-                      Expanded(
-                        child: _RewardOption(
-                          option: rewardCatalog[i],
-                          onTap: () =>
-                              _confirmRedemption(context, rewardCatalog[i]),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+                catalogSection,
                 const SizedBox(height: 18),
                 PrimaryButton(
                   label: 'How it works',
@@ -1778,6 +1958,146 @@ class _RewardsBodyState extends State<_RewardsBody> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// DEMO catalog: fixed local options, local deduction.
+  Widget _demoCatalogSection(BuildContext context, int points) {
+    return Row(
+      children: [
+        for (var i = 0; i < rewardCatalog.length; i++) ...[
+          if (i > 0) const SizedBox(width: 7),
+          Expanded(
+            child: _RewardOption(
+              option: rewardCatalog[i],
+              onTap: () => _confirmRedemptionOption(context, rewardCatalog[i]),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// PRODUCTION catalog: loaded from GET /rewards; server-side redemption.
+  Widget _backendCatalogSection(int points) {
+    if (_loading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+    if (_loadError != null) {
+      return Column(
+        children: [
+          Text(
+            _loadError!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.mutedForeground,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: _loadCatalog,
+            child: const Text(
+              'Retry',
+              style: TextStyle(
+                color: AppColors.darkGreen,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    final rewards = _catalog ?? const <BackendReward>[];
+    if (rewards.isEmpty) {
+      return const Text(
+        'No rewards are available right now.',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
+      );
+    }
+    return Row(
+      children: [
+        for (var i = 0; i < rewards.length && i < 3; i++) ...[
+          if (i > 0) const SizedBox(width: 7),
+          Expanded(
+            child: _BackendRewardOption(
+              reward: rewards[i],
+              onTap: () => _confirmRedemptionBackend(context, rewards[i]),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// Production reward tile driven entirely by backend catalog data.
+class _BackendRewardOption extends StatelessWidget {
+  const _BackendRewardOption({required this.reward, required this.onTap});
+  final BackendReward reward;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final affordable = AppStore.instance.points >= reward.pointsCost;
+    return InkWell(
+      onTap: onTap,
+      child: Opacity(
+        opacity: affordable ? 1 : 0.55,
+        child: Column(
+          children: [
+            Container(
+              width: 43,
+              height: 39,
+              decoration: BoxDecoration(
+                color: const Color(0xFFeef9f2),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(
+                rewardIcon(reward.icon),
+                size: 18,
+                color: const Color(0xFF168b50),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              reward.name,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 10, color: AppColors.foreground),
+            ),
+            Text(
+              reward.provider,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 10,
+                color: AppColors.mutedForeground,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '${reward.pointsCost} pts · ${reward.valueLabel}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                color: affordable
+                    ? AppColors.successGreen
+                    : AppColors.statusYellow,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

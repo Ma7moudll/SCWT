@@ -67,7 +67,7 @@ def seed(db: Session, seed_demo_user: bool = False) -> None:
                 Station(
                     id="st-001",
                     station_code="ST-001",
-                    name="EcoLoop Engineering Station",
+                    name="Ecolamp Engineering Station",
                     status="offline",
                 )
             ]

@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:web_socket_channel/io.dart';
 
+import 'dart:math';
+
 import '../models.dart';
 import '../store.dart';
 import 'api_client.dart';
@@ -142,6 +144,56 @@ class BackendGateway {
   Future<List<LeaderboardEntry>> fetchFacultyLeaderboard() async {
     final body = await api.get('/leaderboard/faculties');
     return leaderboardFromWire(body['entries'] as List<dynamic>? ?? const []);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Rewards (production): the backend catalog is authoritative and the
+  // deduction happens server-side in one atomic transaction. The client
+  // only displays the returned balance.
+  // ---------------------------------------------------------------------------
+
+  /// GET /rewards -> the live catalog plus the authoritative balance.
+  Future<({int balance, List<BackendReward> rewards})> fetchRewards() async {
+    final body = await api.get('/rewards');
+    return (
+      balance: (body['balance'] as num?)?.toInt() ?? 0,
+      rewards: rewardsFromWire(body['rewards'] as List<dynamic>? ?? const []),
+    );
+  }
+
+  /// POST /rewards/{id}/redeem — idempotent via a client-generated key.
+  /// Returns the backend's post-redemption balance. Throws [ApiException]
+  /// (409) when the balance is insufficient or the reward is unavailable.
+  Future<int> redeemReward({
+    required String rewardId,
+    String? destination,
+  }) async {
+    final body = await api.post(
+      '/rewards/$rewardId/redeem',
+      data: {
+        'idempotency_key': _idempotencyKey(),
+        if (destination != null && destination.isNotEmpty)
+          'destination': destination,
+      },
+    );
+    return (body['balance'] as num?)?.toInt() ?? 0;
+  }
+
+  /// POST /rewards/redemptions/{id}/cancel — refunds an unused code.
+  Future<int> cancelRedemption(String redemptionId) async {
+    final body = await api.post('/rewards/redemptions/$redemptionId/cancel');
+    return (body['balance'] as num?)?.toInt() ?? pointsFromWire(body);
+  }
+
+  /// Client-generated idempotency key (no double-spend on retry).
+  String _idempotencyKey() {
+    final rnd = Random.secure();
+    final ts = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    final rand = List.generate(
+      4,
+      (_) => rnd.nextInt(0xFFFFFFFF).toRadixString(36).padLeft(7, '0'),
+    ).join();
+    return 'eco-$ts-$rand';
   }
 
   // ---------------------------------------------------------------------------

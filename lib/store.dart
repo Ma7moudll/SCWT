@@ -156,6 +156,15 @@ class AppStore {
     await p.setInt(_pointsKey, _points);
   }
 
+  /// Updates ONLY the displayed point balance from a backend response
+  /// (e.g. the atomic redemption result). Never called in demo mode.
+  Future<void> updateBackendPoints(int points) async {
+    if (!_backendMode) return;
+    _points = points < 0 ? 0 : points;
+    final p = await SharedPreferences.getInstance();
+    await p.setInt(_pointsKey, _points);
+  }
+
   /// Replaces the display state with an authoritative snapshot from
   /// GET /users/me + GET /waste/history.
   Future<void> replaceFromBackend({

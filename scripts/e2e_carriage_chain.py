@@ -32,8 +32,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-import shutil as _shutil
-PYTHON = _shutil.which("python") or str(ROOT / ".venv" / "bin" / "python")
+# Prefer THIS project's own virtualenv — never another repository's.
+_venv_python = ROOT / ".venv" / "bin" / "python"
+PYTHON = str(_venv_python) if _venv_python.exists() else (
+    __import__("shutil").which("python") or str(_venv_python))
 MOSQUITTO_BIN = Path("/opt/homebrew/sbin/mosquitto")
 AI_MODEL_PATH = ROOT / "ai-service" / "models" / "model.onnx"
 FIXTURES_DIR = ROOT / "ai-service" / "tests" / "fixtures"

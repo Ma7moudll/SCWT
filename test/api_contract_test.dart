@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -138,6 +139,38 @@ void main() {
     });
   });
 
+  group('backend rewards catalog mapping', () {
+    test('reward wire maps cost/name/destination flag', () {
+      final r = BackendReward.fromJson({
+        'id': 'vod_cash_10',
+        'category': 'cash',
+        'name': 'Vodafone Cash 10 EGP',
+        'provider': 'Vodafone',
+        'points_cost': 250,
+        'value_label': '10 EGP',
+        'icon': 'account_balance_wallet',
+        'requires_destination': true,
+      });
+      expect(r.pointsCost, 250);
+      expect(r.requiresDestination, isTrue);
+      expect(
+        rewardIcon('account_balance_wallet'),
+        Icons.account_balance_wallet,
+      );
+      expect(rewardIcon('unknown-name'), Icons.redeem); // safe fallback
+    });
+
+    test('rewardsFromWire maps the catalog list', () {
+      final list = rewardsFromWire([
+        {'id': 'a', 'points_cost': 100},
+        {'id': 'b', 'points_cost': 200, 'icon': 'print'},
+      ]);
+      expect(list.length, 2);
+      expect(list[1].pointsCost, 200);
+      expect(list[1].id, 'b');
+    });
+  });
+
   group('backend-mode store hooks never award points locally', () {
     test('setBackendUser applies the authoritative balance', () async {
       await AppStore.instance.ensureLoaded();
@@ -190,3 +223,4 @@ Contribution _c({required int points}) => Contribution(
   timestamp: DateTime(2026, 8, 25),
   verificationStatus: 'CONFIRMED',
 );
+

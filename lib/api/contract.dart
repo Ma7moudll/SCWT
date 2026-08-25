@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show IconData, Icons;
+
 import '../models.dart';
 import '../store.dart' show UserAccount;
 
@@ -205,3 +207,57 @@ List<LeaderboardEntry> leaderboardFromWire(List<dynamic> items) {
     );
   });
 }
+
+// ---------------------------------------------------------------------------
+// Rewards catalog (production mode)
+// ---------------------------------------------------------------------------
+
+/// A redeemable reward as defined by the BACKEND catalog. The client never
+/// invents rewards or costs in production — it displays these verbatim.
+class BackendReward {
+  const BackendReward({
+    required this.id,
+    required this.name,
+    required this.provider,
+    required this.description,
+    required this.pointsCost,
+    required this.valueLabel,
+    required this.icon,
+    required this.requiresDestination,
+  });
+
+  final String id;
+  final String name;
+  final String provider;
+  final String description;
+  final int pointsCost;
+  final String valueLabel; // "10 EGP", "20% OFF", …
+  final String icon; // Material icon name
+  final bool requiresDestination; // cash payouts need a phone/handle
+
+  static BackendReward fromJson(Map<String, dynamic> j) => BackendReward(
+    id: j['id'] as String,
+    name: (j['name'] as String?) ?? '',
+    provider: (j['provider'] as String?) ?? '',
+    description: (j['description'] as String?) ?? '',
+    pointsCost: (j['points_cost'] as num?)?.toInt() ?? 0,
+    valueLabel: (j['value_label'] as String?) ?? '',
+    icon: (j['icon'] as String?) ?? 'card_giftcard',
+    requiresDestination: j['requires_destination'] as bool? ?? false,
+  );
+}
+
+List<BackendReward> rewardsFromWire(List<dynamic> items) => items
+    .map((e) => BackendReward.fromJson(e as Map<String, dynamic>))
+    .toList();
+
+/// Maps the backend's icon-name strings to Material icons (safe fallback).
+IconData rewardIcon(String name) => switch (name) {
+  'account_balance_wallet' => Icons.account_balance_wallet,
+  'card_giftcard' => Icons.card_giftcard,
+  'local_cafe' || 'coffee' => Icons.local_cafe,
+  'print' || 'print_outlined' => Icons.print,
+  'percent' || 'discount' => Icons.percent,
+  'inventory_2' => Icons.inventory_2,
+  _ => Icons.redeem,
+};
