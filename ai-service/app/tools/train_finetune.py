@@ -132,7 +132,7 @@ def main(argv: list[str] | None = None) -> int:
         "",
         "**WARNING:** These results validate the training/validation pipeline "
         "under simulated camera distribution shift. They do **NOT** establish "
-        "performance on the real EcoLoop station camera.",
+        "performance on the real SCWT station camera.",
         "",
         f"- Baseline: served `{args.model}` (TrashNet-trained, untouched).",
         f"- Candidate: fine-tuned on `{splits_root}/train` "

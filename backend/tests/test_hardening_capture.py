@@ -34,7 +34,7 @@ def test_oversized_capture_rejected_413(client, auth, demo_session, publisher, m
 
     r = client.post(
         "/api/v1/deposit/capture",
-        headers={**auth, "X-Station-Key": "ecolamp-dev-station-key"},
+        headers={**auth, "X-Station-Key": "scwt-dev-station-key"},
         data={
             "operation_id": session["operation_id"],
             "station_code": "ST-001",
@@ -57,7 +57,7 @@ def test_content_length_precheck_rejects_before_read(client, auth, demo_session,
 
     r = client.post(
         "/api/v1/deposit/capture",
-        headers={**auth, "X-Station-Key": "ecolamp-dev-station-key"},
+        headers={**auth, "X-Station-Key": "scwt-dev-station-key"},
         data={
             "operation_id": session["operation_id"],
             "station_code": "ST-001",
@@ -78,7 +78,7 @@ def test_normal_size_capture_still_accepted(client, auth, demo_session, publishe
 
     r = client.post(
         "/api/v1/deposit/capture",
-        headers={**auth, "X-Station-Key": "ecolamp-dev-station-key"},
+        headers={**auth, "X-Station-Key": "scwt-dev-station-key"},
         data={
             "operation_id": session["operation_id"],
             "station_code": "ST-001",

@@ -1,6 +1,6 @@
 # Model comparison — pilot test split
 
-**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real EcoLoop station camera.
+**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real SCWT station camera.
 
 - Test: `data/station_capture_splits/test` (n=720, source=simulated-station-pilot).
 - Candidate trained on `data/station_capture_splits/train` (6 epochs, lr=0.0001, seed 42).

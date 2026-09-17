@@ -1,5 +1,5 @@
 // =============================================================================
-// Ecolamp Station — CARRIAGE firmware entrypoint (independent product).
+// SCWT Station — CARRIAGE firmware entrypoint (independent product).
 // Layers: MQTT layer -> Station FSM -> CarriageController -> driver.
 // =============================================================================
 #include <Arduino.h>

@@ -29,7 +29,7 @@ def _seed_challenge(target_kg: float = 0.01, reward: int = 25) -> str:
 
 def _demo_user() -> User:
     with SessionLocal() as db:
-        return db.query(User).filter(User.email == "demo@ecolamp.campus").first()
+        return db.query(User).filter(User.email == "demo@scwt.campus").first()
 
 
 def test_completed_challenge_awards_bonus_once(
@@ -121,7 +121,7 @@ def test_other_users_are_not_affected_by_someone_elses_completion(
 
     # Register a fresh user; they have NOT completed anything.
     from .conftest import register_and_login
-    other_auth = register_and_login(client, "fresh@recycle.vision", "password123")
+    other_auth = register_and_login(client, "fresh@scwt.campus", "password123")
     items = client.get("/api/v1/challenges", headers=other_auth).json()["items"]
     entry = next(c for c in items if c["id"] == "ch-test-1")
     assert entry["completed"] is False

@@ -15,7 +15,7 @@ from .tools.quality_gate import (
     InputQualityGate,
 )
 
-app = FastAPI(title="Recycle Vision AI")
+app = FastAPI(title="SCWT AI")
 
 # Single stateless gate instance (lazily created on first use).
 _gate: InputQualityGate | None = None

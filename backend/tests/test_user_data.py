@@ -15,7 +15,7 @@ def confirm_deposit(client, auth, prediction, **kwargs) -> dict:
     session = r.json()
     r = client.post(
         "/api/v1/deposit/callback/event",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json=confirm_event(session["operation_id"], **kwargs),
     )
     assert r.status_code == 200, r.text
@@ -55,7 +55,7 @@ def test_rejected_deposit_still_in_history_with_zero_points(client, auth, plasti
     )
     session = r.json()
     client.post("/api/v1/deposit/callback/event",
-                headers={"X-Station-Key": "ecolamp-dev-station-key"},
+                headers={"X-Station-Key": "scwt-dev-station-key"},
                 json=confirm_event(session["operation_id"], position=2, weight=18.4,
                                    stable=True, beam=True, mech=True, carriage=2))
     r = client.get("/api/v1/waste/history", headers=auth)
@@ -121,7 +121,7 @@ def test_update_profile_rejects_unknown_faculty_and_empty(client, auth):
 
 def test_change_password_invalidates_outstanding_tokens(client):
     login = client.post("/api/v1/auth/login",
-                        json={"email": "demo@ecolamp.campus", "password": "demo123"})
+                        json={"email": "demo@scwt.campus", "password": "demo123"})
     old_token = login.json()["token"]
     old_auth = {"Authorization": f"Bearer {old_token}"}
 
@@ -140,9 +140,9 @@ def test_change_password_invalidates_outstanding_tokens(client):
 
     # Login works with the new password only.
     assert client.post("/api/v1/auth/login",
-                       json={"email": "demo@ecolamp.campus", "password": "demo123"}).status_code == 401
+                       json={"email": "demo@scwt.campus", "password": "demo123"}).status_code == 401
     relogin = client.post("/api/v1/auth/login",
-                          json={"email": "demo@ecolamp.campus", "password": "new-pass-123"})
+                          json={"email": "demo@scwt.campus", "password": "new-pass-123"})
     assert relogin.status_code == 200
 
 

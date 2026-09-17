@@ -1,4 +1,4 @@
-"""Ecolamp student-handoff QR flow.
+"""SCWT student-handoff QR flow.
 
 The student app mints a short-lived single-use handoff token
 (POST /deposit/handoff-token); the STATION tablet scans the QR and claims a
@@ -51,7 +51,7 @@ def test_full_handoff_flow_creates_capture_session(client):
 
     claim = client.post(
         "/api/v1/deposit/session/claim",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json={"token": body["token"], "station_id": "st-001"},
     )
     assert claim.status_code == 200, claim.text
@@ -81,14 +81,14 @@ def test_handoff_token_is_single_use(client):
 
     first = client.post(
         "/api/v1/deposit/session/claim",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json={"token": raw, "station_id": "st-001"},
     )
     assert first.status_code == 200
 
     second = client.post(
         "/api/v1/deposit/session/claim",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json={"token": raw, "station_id": "st-001"},
     )
     assert second.status_code == 422
@@ -98,7 +98,7 @@ def test_handoff_token_is_single_use(client):
 def test_unknown_token_rejected(client):
     r = client.post(
         "/api/v1/deposit/session/claim",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json={"token": "a" * 40, "station_id": "st-001"},
     )
     assert r.status_code == 422
@@ -139,7 +139,7 @@ def test_expired_token_rejected(client):
         db.commit()
     r = client.post(
         "/api/v1/deposit/session/claim",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json={"token": raw, "station_id": "st-001"},
     )
     assert r.status_code == 422
@@ -191,7 +191,7 @@ def test_active_deposit_found_after_claim(client):
     raw = mint.json()["token"]
     claim = client.post(
         "/api/v1/deposit/session/claim",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json={"token": raw, "station_id": "st-001"},
     )
     assert claim.status_code == 200

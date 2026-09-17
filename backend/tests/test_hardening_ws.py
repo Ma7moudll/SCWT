@@ -12,7 +12,7 @@ from .test_deposit import create_session
 def _second_user_token(client) -> str:
     """Registers + logs in an attacker (non-owning) account."""
     from .conftest import register_and_login
-    headers = register_and_login(client, "attacker@recycle.vision", "password123")
+    headers = register_and_login(client, "attacker@scwt.campus", "password123")
     return headers["Authorization"].split(" ", 1)[1]
 
 

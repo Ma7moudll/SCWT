@@ -1,7 +1,7 @@
 // =============================================================================
 // MQTT station layer — implements docs/mqtt-contract.md verbatim (§19/§20).
 //
-//  subscribe: ecoloop/stations/{code}/command
+//  subscribe: scwt/stations/{code}/command
 //  publish:   .../event    state_changed + terminal deposit_result
 //             .../sensor   telemetry (mechanism_position, weight, beam)
 //             .../heartbeat  liveness incl. mechanism = "rotary"

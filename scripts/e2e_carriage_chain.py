@@ -1,13 +1,13 @@
-"""Ecolamp end-to-end proof: the REAL deposit chain on Ecolamp services.
+"""SCWT end-to-end proof: the REAL deposit chain on SCWT services.
 
-Ecolamp is a standalone CARRIAGE product: its own broker (ecolamp/stations
+SCWT is a standalone CARRIAGE product: its own broker (scwt/stations
 prefix), own AI service, own PostgreSQL database, own API port. This script
 shares no runtime with any other project.
 
 Starts real processes (not TestClient): mosquitto broker, the ai-service
 (FastAPI), and the backend (FastAPI + SQLAlchemy against PostgreSQL), then
 drives every deposit scenario through the real HTTP + MQTT path with an
-in-process EcoLoopSimulator acting as the ESP32 and a real WebSocket client
+in-process SCWTSimulator acting as the ESP32 and a real WebSocket client
 observing live status.
 
 This is the standing proof that points are only ever awarded by validated
@@ -16,7 +16,7 @@ award points.
 
     backend/../scripts/e2e_carriage_chain.py
 
-Prerequisites: local PostgreSQL (role ecolamp/ecolamp), mosquitto at
+Prerequisites: local PostgreSQL (role scwt/scwt), mosquitto at
 /opt/homebrew/sbin/mosquitto, a Python env with the backend+AI requirements,
 and free ports 1886/8052/8100.
 """
@@ -46,11 +46,11 @@ AI_PORT = 8052
 API_PORT = 8100
 
 DB_URL = (
-    "postgresql+psycopg2://ecolamp:ecolamp@localhost:5432/ecolamp_e2e"
+    "postgresql+psycopg2://scwt:scwt@localhost:5432/scwt_e2e"
 )
-JWT_SECRET = "ecolamp-e2e-secret-not-for-prod"
+JWT_SECRET = "scwt-e2e-secret-not-for-prod"
 
-DEMO_EMAIL = "demo@ecolamp.campus"
+DEMO_EMAIL = "demo@scwt.campus"
 DEMO_PASSWORD = "demo123"
 
 os.environ.setdefault("SIMULATOR_RAMP_STEP", "0")
@@ -61,7 +61,7 @@ import psycopg2  # noqa: E402
 
 from hardware import Carriage, LoadCell  # noqa: E402
 from scenarios import DepositPlan  # noqa: E402
-from simulator import EcoLoopSimulator  # noqa: E402
+from simulator import SCWTSimulator  # noqa: E402
 
 
 def _port_free(port: int) -> bool:
@@ -92,8 +92,8 @@ def _fixture_bytes(name: str) -> bytes:
 
 def _connect_pg():
     conn = psycopg2.connect(
-        host="localhost", port=5432, user="ecolamp", password="ecolamp",
-        dbname="ecolamp_e2e",
+        host="localhost", port=5432, user="scwt", password="scwt",
+        dbname="scwt_e2e",
     )
     conn.autocommit = True
     return conn
@@ -163,8 +163,8 @@ def main() -> None:
 
         mqtt_user = "backend"
         mqtt_pass = secrets.token_urlsafe(24)
-        passwd_file = "/tmp/ecolamp_e2e_mosquitto.passwd"
-        acl_file = "/tmp/ecolamp_e2e_mosquitto.acl"
+        passwd_file = "/tmp/scwt_e2e_mosquitto.passwd"
+        acl_file = "/tmp/scwt_e2e_mosquitto.acl"
         Path(passwd_file).unlink(missing_ok=True)  # mosquitto_passwd -c needs a fresh path
         subprocess.run(
             ["/opt/homebrew/bin/mosquitto_passwd", "-b", "-c", passwd_file,
@@ -172,7 +172,7 @@ def main() -> None:
             check=True,
         )
         with open(acl_file, "w") as acl:
-            acl.write(f"user {mqtt_user}\ntopic readwrite ecolamp/stations/#\n")
+            acl.write(f"user {mqtt_user}\ntopic readwrite scwt/stations/#\n")
         conf = tempfile.NamedTemporaryFile(mode="w", suffix=".conf", delete=False)
         conf.write(
             f"listener {MQTT_PORT}\n"
@@ -185,7 +185,7 @@ def main() -> None:
         conf.close()
         procs.append(subprocess.Popen(
             [str(MOSQUITTO_BIN), "-c", conf.name, "-v"],
-            stdout=open("/tmp/ecolamp_e2e_mosquitto.log", "w"), stderr=subprocess.STDOUT,
+            stdout=open("/tmp/scwt_e2e_mosquitto.log", "w"), stderr=subprocess.STDOUT,
         ))
         _wait_port(MQTT_PORT)
 
@@ -227,7 +227,7 @@ def main() -> None:
             "SEED_DEMO_USER": "true",
             "DEBUG": "false",
         })
-        backend_log = open("/tmp/ecolamp_e2e_backend.log", "w")
+        backend_log = open("/tmp/scwt_e2e_backend.log", "w")
         procs.append(subprocess.Popen(
             [PYTHON, "-m", "uvicorn", "app.main:app", "--port", str(API_PORT),
              "--log-level", "info"],
@@ -259,7 +259,7 @@ def main() -> None:
         cfg.mqtt_username = mqtt_user
         cfg.mqtt_password = mqtt_pass
         cfg.movement_time_seconds = 0.0
-        sim = EcoLoopSimulator(
+        sim = SCWTSimulator(
             config=cfg,
             carriage=Carriage(initial_position=1, movement_time_per_step=0.0),
             load_cell=LoadCell(noise_grams=0, seed=7),
@@ -276,7 +276,7 @@ def main() -> None:
             station = next(s for s in stations if s["id"] == session_station_id.get(operation_id, "st-001"))
             r = client.post(
                 "/api/v1/deposit/capture",
-                headers={**headers, "X-Station-Key": "ecolamp-dev-station-key"},
+                headers={**headers, "X-Station-Key": "scwt-dev-station-key"},
                 data={"operation_id": operation_id, "station_code": station["station_code"]},
                 files={"image": ("frame.jpg", _fixture_bytes("high_conf_plastic.png"), "image/jpeg")},
             )
@@ -702,7 +702,7 @@ def main() -> None:
                 "INSERT INTO users (id, email, student_code, name,"
                 " password_hash, faculty_id, points, role, is_active,"
                 " email_verified, token_version, avatar_version)"
-                " VALUES ('u-e2e-admin', 'admin@ecolamp.campus', 'S-E2EADMIN',"
+                " VALUES ('u-e2e-admin', 'admin@scwt.campus', 'S-E2EADMIN',"
                 " 'E2E Admin', %s, 'ENGINEERING', 0, 'admin', true, true, 0, 0)"
                 " ON CONFLICT (email) DO NOTHING",
                 (admin_hash,),
@@ -711,7 +711,7 @@ def main() -> None:
         conn.close()
 
         admin_login = client.post("/api/v1/auth/login", json={
-            "email": "admin@ecolamp.campus", "password": "admin-pass-123"})
+            "email": "admin@scwt.campus", "password": "admin-pass-123"})
         assert admin_login.status_code == 200, admin_login.text
         admin_headers = {"Authorization":
                          f"Bearer {admin_login.json()['token']}"}

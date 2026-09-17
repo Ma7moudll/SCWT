@@ -14,7 +14,7 @@ def _prod_settings(**overrides) -> Settings:
         station_api_key="a-production-station-key-just-as-random",
         mqtt_username="backend",
         mqtt_password="real-broker-password",
-        allowed_origins="https://ecoloop.example.org",
+        allowed_origins="https://scwt.example.org",
         debug=False,
         debug_image_hash=False,
         seed_demo_user=False,
@@ -22,7 +22,7 @@ def _prod_settings(**overrides) -> Settings:
         # Production-grade session/link settings required by validate_production:
         # short-lived access tokens and a real public base URL for emails.
         jwt_access_token_minutes=240,
-        public_base_url="https://ecoloop.example.org",
+        public_base_url="https://scwt.example.org",
     )
     base.update(overrides)
     return Settings(**base)
@@ -40,7 +40,7 @@ def test_default_jwt_secret_rejected():
 
 def test_default_station_key_rejected():
     with pytest.raises(ProductionSecretError) as exc:
-        _prod_settings(station_api_key="ecolamp-dev-station-key").validate_production()
+        _prod_settings(station_api_key="scwt-dev-station-key").validate_production()
     assert "STATION_API_KEY" in str(exc.value)
 
 

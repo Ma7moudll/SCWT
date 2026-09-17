@@ -22,7 +22,7 @@ def student(client):
         db.add(
             User(
                 id="u-reward",
-                email="reward@recycle.vision",
+                email="reward@scwt.campus",
                 student_code="S-REWARD",
                 name="Reward Student",
                 password_hash=hash_password("reward-pass-123"),
@@ -33,7 +33,7 @@ def student(client):
         db.commit()
     r = client.post(
         "/api/v1/auth/login",
-        json={"email": "reward@recycle.vision", "password": "reward-pass-123"},
+        json={"email": "reward@scwt.campus", "password": "reward-pass-123"},
     )
     assert r.status_code == 200, r.text
     return {"Authorization": f"Bearer {r.json()['token']}"}
@@ -225,11 +225,11 @@ def test_cash_reward_requires_destination(client, student):
 @pytest.fixture
 def admin_auth(client):
     with SessionLocal() as db:
-        if db.query(User).filter(User.email == "admin@recycle.vision").first() is None:
+        if db.query(User).filter(User.email == "admin@scwt.campus").first() is None:
             db.add(
                 User(
                     id="u-admin",
-                    email="admin@recycle.vision",
+                    email="admin@scwt.campus",
                     student_code="S-ADMIN",
                     name="Admin",
                     password_hash=hash_password("admin-pass-123"),
@@ -241,7 +241,7 @@ def admin_auth(client):
             db.commit()
     r = client.post(
         "/api/v1/auth/login",
-        json={"email": "admin@recycle.vision", "password": "admin-pass-123"},
+        json={"email": "admin@scwt.campus", "password": "admin-pass-123"},
     )
     assert r.status_code == 200, r.text
     return {"Authorization": f"Bearer {r.json()['token']}"}
@@ -275,7 +275,7 @@ def test_cash_redemption_lands_pending_in_admin_queue(client, student, admin_aut
     assert "*" in item["destination_masked"] and not item["destination_masked"].endswith(
         "01012345678"
     )  # masked, not raw
-    assert item["student"]["email"] == "reward@recycle.vision"
+    assert item["student"]["email"] == "reward@scwt.campus"
 
 
 def test_approve_then_fulfill_flow(client, student, admin_auth):
@@ -405,7 +405,7 @@ def test_stock_is_atomic_and_blocks_sold_out(client, student, admin_auth):
             [
                 User(
                     id=f"u-stock-{i}",
-                    email=f"stock{i}@recycle.vision",
+                    email=f"stock{i}@scwt.campus",
                     student_code=f"S-STOCK{i}",
                     name=f"Stock {i}",
                     password_hash=hash_password("stock-pass-123"),
@@ -421,7 +421,7 @@ def test_stock_is_atomic_and_blocks_sold_out(client, student, admin_auth):
     for i in range(2):
         r = client.post(
             "/api/v1/auth/login",
-            json={"email": f"stock{i}@recycle.vision", "password": "stock-pass-123"},
+            json={"email": f"stock{i}@scwt.campus", "password": "stock-pass-123"},
         )
         tokens.append({"Authorization": f"Bearer {r.json()['token']}"})
 
@@ -563,7 +563,7 @@ def _admin_headers(client) -> dict:
             db.add(
                 User(
                     id="u-admin-race",
-                    email="race-admin@recycle.vision",
+                    email="race-admin@scwt.campus",
                     student_code="S-RACEADMIN",
                     name="Race Admin",
                     password_hash=hash_password("admin-pass-123"),
@@ -575,7 +575,7 @@ def _admin_headers(client) -> dict:
             db.commit()
     r = client.post(
         "/api/v1/auth/login",
-        json={"email": "race-admin@recycle.vision", "password": "admin-pass-123"},
+        json={"email": "race-admin@scwt.campus", "password": "admin-pass-123"},
     )
     assert r.status_code == 200, r.text
     return {"Authorization": f"Bearer {r.json()['token']}"}
@@ -872,7 +872,7 @@ def test_concurrent_challenge_completion_keeps_base_points(
 
     with SessionLocal() as winner:
         wuser = winner.execute(
-            select(User).where(User.email == "demo@ecolamp.campus")
+            select(User).where(User.email == "demo@scwt.campus")
         ).scalar_one()
         bonus_w = ChallengeService().on_deposit_confirmed(winner, wuser, "plastic")
         winner.commit()
@@ -881,7 +881,7 @@ def test_concurrent_challenge_completion_keeps_base_points(
     # Loser holds a stale session that has NOT seen the winner's row.
     with SessionLocal() as loser:
         luser = loser.execute(
-            select(User).where(User.email == "demo@ecolamp.campus")
+            select(User).where(User.email == "demo@scwt.campus")
         ).scalar_one()
         base = luser.points          # includes everything committed so far
         luser.points += 7            # simulate this deposit's BASE award

@@ -1,7 +1,7 @@
 // =============================================================================
-// Ecolamp Station — CARRIAGE firmware configuration.
+// SCWT Station — CARRIAGE firmware configuration.
 //
-// Ecolamp is an independent product built around the CARRIAGE sorting
+// SCWT is an independent product built around the CARRIAGE sorting
 // mechanism: a carriage travels along a linear rail and releases waste into
 // the bin under the routed compartment. Every hardware value lives here (no
 // magic numbers elsewhere). Recalibrate by editing this file or via CAL mode.
@@ -13,13 +13,13 @@ static const char* STATION_CODE      = "ST-001";
 static const char* STATION_MECHANISM = "carriage";
 
 // ------------------------------------------------------------------- WiFi ---
-static const char* WIFI_SSID         = "ecolamp-station";
+static const char* WIFI_SSID         = "scwt-station";
 static const char* WIFI_PASS         = "change-me";
 static const char* MQTT_HOST         = "192.168.1.20";
 static const uint16_t MQTT_PORT      = 1886;
 static const char* MQTT_USER         = "station-";    // + STATION_CODE at runtime
 static const char* MQTT_PASS         = "change-me";
-static const char* MQTT_TOPIC_PREFIX = "ecolamp/stations";
+static const char* MQTT_TOPIC_PREFIX = "scwt/stations";
 
 // ------------------------------------------------------------- stepper ------
 // GT2 belt drive, 20T pulley => 40 mm/rev. Positions are 40 mm apart.

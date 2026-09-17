@@ -1,6 +1,6 @@
 # Open-set report — synthetic OOD false-acceptance
 
-**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real EcoLoop station camera.
+**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real SCWT station camera.
 
 - Served model: `models/model.onnx`
 - OOD samples: 300 synthetic non-waste frames (tray-grey, noise, gradient, shapes, stains, solid).

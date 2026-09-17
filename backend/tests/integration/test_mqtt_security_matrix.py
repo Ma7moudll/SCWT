@@ -25,7 +25,7 @@ import pytest
 from conftest import BROKER_PASS, BROKER_HOST, BROKER_PORT, BROKER_USER, \
     STATION_PASS, STATION_USER, mosquitto_pub
 
-PREFIX = "ecolamp/stations"
+PREFIX = "scwt/stations"
 EVENT_TOPIC = f"{PREFIX}/st-001/event"
 STATE_TOPIC = f"{PREFIX}/st-001/state"
 

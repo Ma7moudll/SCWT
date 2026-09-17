@@ -1,6 +1,6 @@
 """Shared fixtures for full-chain MQTT integration tests.
 
-Spins up a REAL authenticated mosquitto broker on :1884 (parity with
+Spins up a REAL authenticated mosquitto broker on :1896 (parity with
 production) with two identities:
 
     backend        -- full control of the station tree (what the gateway uses;
@@ -22,7 +22,7 @@ import pytest
 MOSQUITTO_BIN = Path("/opt/homebrew/sbin/mosquitto")
 PASSWD_BIN = Path("/opt/homebrew/bin/mosquitto_passwd")
 BROKER_HOST = "127.0.0.1"
-BROKER_PORT = 1884  # must match backend/tests/conftest.py env
+BROKER_PORT = 1896  # must match backend/tests/conftest.py env
 BROKER_USER = "backend"
 BROKER_PASS = "itest-broker-pass"  # must match backend/tests/conftest.py env
 
@@ -63,15 +63,15 @@ def broker(tmp_path_factory):
     acl_file = tmp_path_factory.mktemp("broker") / "acl"
     acl_file.write_text(
         f"user {BROKER_USER}\n"
-        f"topic readwrite ecolamp/stations/#\n\n"
+        f"topic readwrite scwt/stations/#\n\n"
         f"# Least privilege: ST-001 may only touch its own topics.\n"
         f"user {STATION_USER}\n"
-        f"topic read ecolamp/stations/st-001/command\n"
-        f"topic read ecolamp/stations/st-001/capture_request\n"
-        f"topic write ecolamp/stations/st-001/event\n"
-        f"topic write ecolamp/stations/st-001/sensor\n"
-        f"topic write ecolamp/stations/st-001/state\n"
-        f"topic write ecolamp/stations/st-001/heartbeat\n"
+        f"topic read scwt/stations/st-001/command\n"
+        f"topic read scwt/stations/st-001/capture_request\n"
+        f"topic write scwt/stations/st-001/event\n"
+        f"topic write scwt/stations/st-001/sensor\n"
+        f"topic write scwt/stations/st-001/state\n"
+        f"topic write scwt/stations/st-001/heartbeat\n"
     )
 
     conf = tmp_path_factory.mktemp("broker") / "mosquitto.conf"

@@ -1,6 +1,6 @@
 # Fine-tuning report — baseline vs fine-tuned (pilot test)
 
-**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real EcoLoop station camera.
+**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real SCWT station camera.
 
 - Baseline: served `models/model.onnx` (TrashNet-trained, untouched).
 - Candidate: fine-tuned on `data/station_capture_splits/train` (source=simulated-station-pilot, seed 42, eager head + last-block, 6 epochs, lr=0.0001).

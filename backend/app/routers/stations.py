@@ -22,7 +22,7 @@ def _wire(station: Station, snapshot=None) -> dict:
         "station_code": station.station_code,
         "name": station.name,
         "status": live.status if live else station.status,
-        # Ecolamp station metadata: the CARRIAGE sorting mechanism.
+        # SCWT station metadata: the CARRIAGE sorting mechanism.
         "mechanism": getattr(station, "mechanism", None) or "carriage",
     }
     if live is not None:

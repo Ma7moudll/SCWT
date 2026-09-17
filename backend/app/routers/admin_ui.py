@@ -16,7 +16,7 @@ _PAGE = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>EcoLoop Admin</title>
+<title>SCWT Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root { --green:#0b6e3f; --bg:#f4f7f5; --card:#fff; --line:#dde5e0; --muted:#68766e; }
@@ -55,7 +55,7 @@ _PAGE = """<!DOCTYPE html>
 </head>
 <body>
 <div id="login">
-  <h1>EcoLoop Admin</h1>
+  <h1>SCWT Admin</h1>
   <p class="sub">Administrator sign-in. Student accounts are refused.</p>
   <input id="email" type="email" placeholder="admin email" autocomplete="username">
   <input id="pass" type="password" placeholder="password" autocomplete="current-password">
@@ -64,7 +64,7 @@ _PAGE = """<!DOCTYPE html>
 </div>
 
 <div id="app" style="display:none">
-  <h1>EcoLoop Admin Console</h1>
+  <h1>SCWT Admin Console</h1>
   <p class="sub" id="who"></p>
   <nav id="tabs"></nav>
 

@@ -124,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
         "",
         "**WARNING:** These results validate the training/validation pipeline "
         "under simulated camera distribution shift. They do **NOT** establish "
-        "performance on the real EcoLoop station camera.",
+        "performance on the real SCWT station camera.",
         "",
         f"- Served model: `{model_path}`",
         f"- OOD samples: {args.n} synthetic non-waste frames "

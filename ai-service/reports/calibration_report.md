@@ -1,6 +1,6 @@
 # Confidence calibration report
 
-**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real EcoLoop station camera.
+**WARNING:** These results validate the training/validation pipeline under simulated camera distribution shift. They do **NOT** establish performance on the real SCWT station camera.
 
 - Model: `models/model.onnx`
 - Fitted on: `data/station_capture_splits/val` (source=simulated-station-pilot, n=720)

@@ -1,6 +1,6 @@
 # Input quality gate report — background frames stay out of the classifier
 
-**WARNING:** These results validate the lightweight camera gate under simulated camera conditions. They do **NOT** establish performance on the real EcoLoop station camera.
+**WARNING:** These results validate the lightweight camera gate under simulated camera conditions. They do **NOT** establish performance on the real SCWT station camera.
 
 - Gate: `app.tools.quality_gate.InputQualityGate` + `ObjectPresenceDetector` (PIL/numpy/scipy, no cv2).
 - Served model (unchanged by this work): `model.onnx` — `RealInferenceClassifier`, never invoked for rejected frames.

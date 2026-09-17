@@ -39,7 +39,7 @@ def _sleep(seconds: float) -> None:
         time.sleep(seconds)
 
 
-class EcoLoopSimulator:
+class SCWTSimulator:
     """One station instance acting as the future ESP32."""
 
     def __init__(
@@ -310,14 +310,14 @@ class EcoLoopSimulator:
 
 def make_cli_simulator(config=None):
     """Builds a fully-wired simulator for the `simulator.py` CLI entrypoint."""
-    return EcoLoopSimulator(config=config or sim_config)
+    return SCWTSimulator(config=config or sim_config)
 
 
 def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="EcoLoop hardware simulator — behaves like the future ESP32 "
+        description="SCWT hardware simulator — behaves like the future ESP32 "
         "firmware on the documented MQTT contract."
     )
     parser.add_argument("--broker", default=None, help="MQTT broker host (default: env MQTT_BROKER_HOST)")

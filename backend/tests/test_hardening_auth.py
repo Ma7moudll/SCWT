@@ -66,14 +66,14 @@ def test_wrong_password_counts_against_rate_limit(client):
 def test_register_rate_limited(client, monkeypatch):
     _install_mailer(monkeypatch)
     payload = {
-        "email": "ratelimit@recycle.vision",
+        "email": "ratelimit@scwt.campus",
         "password": "password123",
         "name": "RL",
         "facultyId": "ENGINEERING",
     }
     codes = []
     for i in range(12):
-        p = dict(payload, email=f"ratelimit{i}@recycle.vision")
+        p = dict(payload, email=f"ratelimit{i}@scwt.campus")
         codes.append(client.post("/api/v1/auth/register", json=p).status_code)
     assert codes.count(429) >= 1
 
@@ -115,7 +115,7 @@ def test_forgot_password_never_enumerates(client, monkeypatch):
         "/api/v1/auth/forgot-password", json={"email": DEMO_EMAIL}
     )
     unknown = client.post(
-        "/api/v1/auth/forgot-password", json={"email": "nobody@recycle.vision"}
+        "/api/v1/auth/forgot-password", json={"email": "nobody@scwt.campus"}
     )
     assert known.status_code == unknown.status_code == 200
     assert known.json() == unknown.json()
@@ -200,7 +200,7 @@ def test_registration_sends_verification_and_verify_email_works(
     r = client.post(
         "/api/v1/auth/register",
         json={
-            "email": "verify@recycle.vision",
+            "email": "verify@scwt.campus",
             "password": "password123",
             "name": "Verify Me",
             "facultyId": "ENGINEERING",
@@ -213,14 +213,14 @@ def test_registration_sends_verification_and_verify_email_works(
     token = verification["body"].split("token=")[1].split("\n")[0]
 
     with SessionLocal() as db:
-        user = db.query(User).filter(User.email == "verify@recycle.vision").first()
+        user = db.query(User).filter(User.email == "verify@scwt.campus").first()
         assert user.email_verified is False
 
     r = client.post("/api/v1/auth/verify-email", json={"token": token})
     assert r.status_code == 200
 
     with SessionLocal() as db:
-        user = db.query(User).filter(User.email == "verify@recycle.vision").first()
+        user = db.query(User).filter(User.email == "verify@scwt.campus").first()
         assert user.email_verified is True
 
 
@@ -229,7 +229,7 @@ def test_verify_email_token_is_single_use(client, monkeypatch):
     client.post(
         "/api/v1/auth/register",
         json={
-            "email": "verify-once@recycle.vision",
+            "email": "verify-once@scwt.campus",
             "password": "password123",
             "name": "Once",
             "facultyId": "ENGINEERING",

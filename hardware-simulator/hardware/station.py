@@ -12,7 +12,7 @@ DEFAULT_POSITIONS = (1, 2, 3, 4)
 
 
 class Station:
-    """The simulated EcoLoop unit: one body, four internal compartment
+    """The simulated SCWT unit: one body, four internal compartment
     positions, an internal carriage, a load cell and an IR beam.
 
     This class IS the future ESP32 firmware driving real motors and reading

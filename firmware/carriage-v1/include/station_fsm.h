@@ -1,5 +1,5 @@
 // =============================================================================
-// Station FSM — the deposit lifecycle (§18). Mirrors the Recycle Vision
+// Station FSM — the deposit lifecycle (§18). Mirrors the SCWT
 // MachineState contract exactly (both mechanisms share one lifecycle):
 //
 // IDLE -> ROUTING -> MOVING -> POSITIONED -> READY_FOR_DEPOSIT -> DETECTING

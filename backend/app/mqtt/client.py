@@ -5,11 +5,11 @@ sensor & event telemetry into the deposit service and station registry. It is
 also the publisher that sends routing commands to the station.
 
 Topic contract (see docs/mqtt-contract.md):
-  ecolamp/stations/{code}/command    backend -> station
-  ecolamp/stations/{code}/state      station -> backend
-  ecolamp/stations/{code}/sensor     station -> backend
-  ecolamp/stations/{code}/event      station -> backend
-  ecolamp/stations/{code}/heartbeat  station -> backend
+  scwt/stations/{code}/command    backend -> station
+  scwt/stations/{code}/state      station -> backend
+  scwt/stations/{code}/sensor     station -> backend
+  scwt/stations/{code}/event      station -> backend
+  scwt/stations/{code}/heartbeat  station -> backend
 """
 from __future__ import annotations
 

@@ -175,7 +175,7 @@ def main(argv: list[str] | None = None) -> int:
         "",
         "**WARNING:** These results validate the lightweight camera gate under "
         "simulated camera conditions. They do **NOT** establish performance on "
-        "the real EcoLoop station camera.",
+        "the real SCWT station camera.",
         "",
         f"- Gate: `app.tools.quality_gate.InputQualityGate` + "
         f"`ObjectPresenceDetector` (PIL/numpy/scipy, no cv2).",

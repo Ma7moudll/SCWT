@@ -10,7 +10,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class AISettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = "Recycle Vision AI"
+    app_name: str = "SCWT AI"
     # classifier = real | development
     # Production default is `real` (trained ONNX artifact). `development` is
     # only an isolated test fixture; its DEVELOPMENT_FORCE_* knobs never

@@ -1,5 +1,5 @@
 // =============================================================================
-// CarriageController — Ecolamp's mechanism abstraction.
+// CarriageController — SCWT's mechanism abstraction.
 //
 // MQTT layer -> Station FSM -> CarriageController (HERE) -> stepper driver.
 // Positions are 1..4 along a linear rail with a limit switch at position 1.

@@ -1,5 +1,5 @@
 """End-to-end simulator scenario tests: run a DepositPlan through
-`EcoLoopSimulator.run_plan` with a recording (fake) MQTT client and assert the
+`SCWTSimulator.run_plan` with a recording (fake) MQTT client and assert the
 exact terminal deposit_result a real backend would validate."""
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import pytest  # noqa: E402
 from config import SimConfig  # noqa: E402
 from hardware import Carriage, LoadCell  # noqa: E402
 from scenarios import SCENARIOS, DepositPlan  # noqa: E402
-from simulator import EcoLoopSimulator  # noqa: E402
+from simulator import SCWTSimulator  # noqa: E402
 
 
 class FakeMqtt:
@@ -35,7 +35,7 @@ class FakeMqtt:
 @pytest.fixture
 def make_sim():
     def _make():
-        return EcoLoopSimulator(
+        return SCWTSimulator(
             config=SimConfig(),
             mqtt=FakeMqtt(),
             carriage=Carriage(initial_position=1, movement_time_per_step=0),
@@ -186,7 +186,7 @@ class TestCaptureRequestDispatch:
 
         cam = CaptureUploader(cfg, client=_FakeClient(fake_post))
         cfg.backend_url = "http://capture.test"
-        sim = EcoLoopSimulator(config=cfg, mqtt=FakeMqtt(), capture_uploader=cam)
+        sim = SCWTSimulator(config=cfg, mqtt=FakeMqtt(), capture_uploader=cam)
         sim._on_command({"command": "capture_request", "operation_id": "OP-CAP-1"})
 
         assert captured["url"] == "http://capture.test/api/v1/deposit/capture"

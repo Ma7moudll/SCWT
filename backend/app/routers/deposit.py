@@ -37,7 +37,7 @@ def handoff_token(
 ) -> HandoffTokenResponse:
     """Mints the student's short-lived deposit-handoff QR token.
 
-    The Ecolamp app renders `{token}` as a QR; the STATION tablet scans it and
+    The SCWT app renders `{token}` as a QR; the STATION tablet scans it and
     exchanges it (authenticated with its station key) via
     `POST /deposit/session/claim`. Single-use + short TTL => a scanned or
     shoulder-surfed QR cannot be replayed, and no long-lived secret ever
@@ -70,7 +70,7 @@ def claim_session(
     x_station_key: str = Header(default="", alias="X-Station-Key"),
     db: Session = Depends(get_db),
 ) -> dict:
-    """Station-side claim of a student handoff QR (Ecolamp flow).
+    """Station-side claim of a student handoff QR (SCWT flow).
 
     The station tablet — authenticated with `X-Station-Key`, the same trust
     boundary as `/deposit/capture` — consumes the student's single-use

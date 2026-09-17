@@ -19,7 +19,7 @@ class SimConfig:
         self.mqtt_tls: bool = os.environ.get("MQTT_TLS", "").lower() in ("1", "true", "yes")
         self.station_id: str = os.environ.get("STATION_ID", "st-001")
         self.station_code: str = os.environ.get("STATION_CODE", "ST-001")
-        self.topic_prefix: str = os.environ.get("MQTT_TOPIC_PREFIX", "ecolamp/stations")
+        self.topic_prefix: str = os.environ.get("MQTT_TOPIC_PREFIX", "scwt/stations")
 
         # Station-camera upload (backend `POST /api/v1/deposit/capture`).
         self.backend_url: str = os.environ.get("BACKEND_URL", "http://localhost:8080")

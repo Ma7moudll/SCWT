@@ -23,7 +23,7 @@ _DEV_DEFAULT_SECRETS = frozenset(
         "dev-secret-not-for-prod",
         "change-me-in-production",
         "dev-station-key",
-        "ecolamp-dev-station-key",
+        "scwt-dev-station-key",
     }
 )
 
@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     )
 
     # -- API -----------------------------------------------------------------
-    app_name: str = "Ecolamp API"
+    app_name: str = "SCWT API"
     api_v1_prefix: str = "/api/v1"
     debug: bool = False
     # development | production. Production enables the startup secret guard,
@@ -66,19 +66,19 @@ class Settings(BaseSettings):
     allowed_origins: str = "http://localhost:3000,http://localhost:8080"
 
     # -- Database ------------------------------------------------------------
-    database_url: str = "postgresql+psycopg2://ecolamp:ecolamp@localhost:5432/ecolamp_db"
+    database_url: str = "postgresql+psycopg2://scwt:scwt@localhost:5432/scwt_db"
 
     # -- AI service ----------------------------------------------------------
-    ai_service_url: str = "http://localhost:8051"
+    ai_service_url: str = "http://localhost:8052"
     ai_timeout_seconds: float = 15.0
 
     # -- MQTT ----------------------------------------------------------------
     mqtt_broker_host: str = "localhost"
-    mqtt_broker_port: int = 1883
+    mqtt_broker_port: int = 1886
     mqtt_username: str | None = None
     mqtt_password: str | None = None
-    mqtt_client_id: str = "recycle-backend"
-    mqtt_topic_prefix: str = "ecolamp/stations"
+    mqtt_client_id: str = "scwt-backend"
+    mqtt_topic_prefix: str = "scwt/stations"
     # TLS (HiveMQ Cloud and any broker with listener 8883). Certificate
     # validation always uses the system trust store — no bypasses.
     mqtt_tls: bool = False
@@ -88,7 +88,7 @@ class Settings(BaseSettings):
     # Shared secret authenticating the station camera when it uploads a capture
     # to `POST /api/v1/deposit/capture`. The camera carries it in the
     # `X-Station-Key` header. Production replaces this with per-station keys.
-    station_api_key: str = "ecolamp-dev-station-key"
+    station_api_key: str = "scwt-dev-station-key"
     station_capture_timeout_seconds: int = 20
 
     # -- Upload limits ---------------------------------------------------------
@@ -113,7 +113,7 @@ class Settings(BaseSettings):
     # -- Seed data -----------------------------------------------------------
     seed_on_startup: bool = True
     # When true, `seed()` also creates the well-known dev/test account
-    # (`demo@ecolamp.campus` / `demo123`, 45 pts). Default OFF so the runtime
+    # (`demo@scwt.campus` / `demo123`, 45 pts). Default OFF so the runtime
     # DB contains no demo users; test suites and the software E2E opt in.
     seed_demo_user: bool = False
 
@@ -125,7 +125,7 @@ class Settings(BaseSettings):
     smtp_port: int = 587
     smtp_username: str | None = None
     smtp_password: str | None = None
-    smtp_from: str = "noreply@ecolamp.campus"
+    smtp_from: str = "noreply@scwt.campus"
     password_reset_token_ttl_seconds: int = 30 * 60
     email_verification_token_ttl_seconds: int = 24 * 60 * 60
 

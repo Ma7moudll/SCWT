@@ -13,7 +13,7 @@ from __future__ import annotations
 from app.database import SessionLocal
 from app.models import AiPrediction, DepositSession, User
 
-STATION_KEY = "ecolamp-dev-station-key"
+STATION_KEY = "scwt-dev-station-key"
 
 
 def install_fake_ai(monkeypatch, fake_ai):
@@ -55,7 +55,7 @@ def capture(client, operation_id: str, image: bytes = b"fake-frame-jpeg") -> tup
 
 def demo_user_id() -> str:
     with SessionLocal() as db:
-        return db.query(User).filter(User.email == "demo@ecolamp.campus").first().id
+        return db.query(User).filter(User.email == "demo@scwt.campus").first().id
 
 
 def user_points(user_id: str) -> int:
@@ -237,7 +237,7 @@ def test_capture_ai_service_unavailable_503_and_capture_retake(client, auth, mon
 
     demo_session = client.post(
         "/api/v1/auth/login",
-        json={"email": "demo@ecolamp.campus", "password": "demo123"},
+        json={"email": "demo@scwt.campus", "password": "demo123"},
     ).json()["token"]
     before = user_points(demo_user_id())
 

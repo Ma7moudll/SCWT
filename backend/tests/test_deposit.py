@@ -26,7 +26,7 @@ def create_session(client, auth, prediction) -> dict:
 def complete(client, operation_id: str, **kwargs) -> dict:
     r = client.post(
         "/api/v1/deposit/callback/event",
-        headers={"X-Station-Key": "ecolamp-dev-station-key"},
+        headers={"X-Station-Key": "scwt-dev-station-key"},
         json=confirm_event(operation_id, **kwargs),
     )
     return r.status_code, r.json()
@@ -49,7 +49,7 @@ def user_balance_delta(operation_id: str, predicted: int) -> int:
 
 def _create_and_get_user_id(client, demo_session):
     with SessionLocal() as db:
-        return db.query(User).filter(User.email == "demo@ecolamp.campus").first().id
+        return db.query(User).filter(User.email == "demo@scwt.campus").first().id
 
 
 # --------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 """Full-chain integration test:
 
-    FastAPI (backend) ──route command──▶ MQTT broker ◀─subscribe── EcoLoopSimulator
+    FastAPI (backend) ──route command──▶ MQTT broker ◀─subscribe── SCWTSimulator
     backend ◀─────────────── deposit_result sensor events ────────── simulator
 
 The simulator behaves like the future ESP32 firmware: it subscribes to its
@@ -18,7 +18,7 @@ import pytest
 
 # The authenticated broker fixture lives in tests/integration/conftest.py.
 BROKER_HOST = "127.0.0.1"
-BROKER_PORT = 1884  # must match backend/tests/conftest.py env
+BROKER_PORT = 1896  # must match backend/tests/conftest.py env
 BROKER_USER = "backend"
 BROKER_PASS = "itest-broker-pass"  # must match backend/tests/conftest.py env
 
@@ -35,7 +35,7 @@ def simulator(broker):
 
     from config import SimConfig
     from hardware import Carriage, LoadCell
-    from simulator import EcoLoopSimulator
+    from simulator import SCWTSimulator
 
     cfg = SimConfig()
     cfg.broker_host = BROKER_HOST
@@ -44,7 +44,7 @@ def simulator(broker):
     cfg.mqtt_password = BROKER_PASS
     cfg.movement_time_seconds = 0.0
 
-    sim = EcoLoopSimulator(
+    sim = SCWTSimulator(
         config=cfg,
         carriage=Carriage(initial_position=1, movement_time_per_step=0.0),
         load_cell=LoadCell(noise_grams=0, seed=7),

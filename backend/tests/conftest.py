@@ -12,8 +12,8 @@ import tempfile
 _db_file = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
 os.environ["DATABASE_URL"] = f"sqlite:///{_db_file.name}"
 os.environ["MQTT_BROKER_HOST"] = "127.0.0.1"
-os.environ["MQTT_BROKER_PORT"] = "1884"  # nothing listens here; gateway retries quietly
-# Integration tests spin up an AUTHENTICATED broker on 1884 with these exact
+os.environ["MQTT_BROKER_PORT"] = "1896"  # nothing listens here; gateway retries quietly
+# Integration tests spin up an AUTHENTICATED broker on 1896 with these exact
 # credentials (test-only values, never used outside the throwaway broker).
 os.environ["MQTT_USERNAME"] = "backend"
 os.environ["MQTT_PASSWORD"] = "itest-broker-pass"
@@ -31,7 +31,7 @@ from app.services.ai_client import AiExternalPrediction  # noqa: E402
 from app.services.predict_service import PredictService  # noqa: E402
 from app.services.seed import seed  # noqa: E402
 
-DEMO_EMAIL = "demo@ecolamp.campus"
+DEMO_EMAIL = "demo@scwt.campus"
 DEMO_PASSWORD = "demo123"
 STATION_ID = "st-001"
 STATION_CODE = "ST-001"
@@ -81,7 +81,7 @@ def client():
 @pytest.fixture(autouse=True)
 def fresh_db(client):
     """Clean schema + seed before every test (the MQTT gateway daemon keeps
-    retrying 127.0.0.1:1884 harmlessly in the background)."""
+    retrying 127.0.0.1:1896 harmlessly in the background)."""
     from app.routers import auth as auth_router
     from app.security import revocation as revocation_module
 

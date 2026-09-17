@@ -34,7 +34,7 @@ class DepositPlan:
     final_weight: float | None = None  # overrides final reading (underweight)
     beam_seen: bool = True
     mechanical_confirmed: bool = True
-    jam_at_step: int | None = None      # V1 carriage: 1-based step index
+    jam_at_step: int | None = None      # 1-based carriage step index
     delay_before_terminal: float = 0.0
     duplicate_terminal: bool = False
     emit_machine_status: str = "confirmed"  # what the machine believes happened

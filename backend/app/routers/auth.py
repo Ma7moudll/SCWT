@@ -191,9 +191,9 @@ def register(payload: RegisterRequest, request: Request, db: Session = Depends(g
     )
     get_mailer().send(
         to=email,
-        subject="Verify your EcoLoop account",
+        subject="Verify your SCWT account",
         body=(
-            f"Welcome to EcoLoop, {user.name}!\n\n"
+            f"Welcome to SCWT, {user.name}!\n\n"
             f"Verify your account: {settings.public_base_url}/verify-email?token={verification}\n"
             f"This link expires in {settings.email_verification_token_ttl_seconds // 3600} hours."
         ),
@@ -264,7 +264,7 @@ def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Sessio
         )
         get_mailer().send(
             to=email,
-            subject="Reset your EcoLoop password",
+            subject="Reset your SCWT password",
             body=(
                 f"Reset your password: {settings.public_base_url}/reset-password?token={raw}\n"
                 f"This link expires in {settings.password_reset_token_ttl_seconds // 60} minutes "
