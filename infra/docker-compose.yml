@@ -1,0 +1,111 @@
+# SCWT — standalone development stack (independent product).
+# Ports owned by SCWT so it can run side by side with any other software:
+#   API 8100 · AI 8052 · MQTT 1886 · PostgreSQL 55432
+#
+#   docker compose -f infra/docker-compose.yml up --build
+#
+# SECRETS: the values below are DEVELOPMENT ONLY. For anything reachable
+# outside your machine, copy infra/.env.example → infra/.env and supply real
+# JWT_SECRET / STATION_API_KEY / MQTT credentials via env.
+
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: scwt
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scwt}
+      POSTGRES_DB: scwt_db
+    ports: ["127.0.0.1:55432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scwt -d scwt_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/acl:/mosquitto/config/acl:ro
+      - ./mosquitto/passwd:/mosquitto/config/passwd:ro
+    ports: ["127.0.0.1:1886:1886"]
+
+  ai:
+    build: ../ai-service
+    restart: unless-stopped
+    environment:
+      AI_SERVICE_CLASSIFIER: real
+      AI_MODEL_PATH: models/model.onnx
+    ports: ["127.0.0.1:8052:8052"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'python -c "import urllib.request;urllib.request.urlopen(''http://localhost:8052/health'', timeout=2)" || exit 1',
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  backend:
+    build: ../backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      ai:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://scwt:${POSTGRES_PASSWORD:-scwt}@db:5432/scwt_db
+      MQTT_BROKER_HOST: mqtt
+      MQTT_BROKER_PORT: 1886
+      MQTT_USERNAME: backend
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-scwt-dev-broker-pass}
+      AI_SERVICE_URL: http://ai:8052
+      STATION_API_KEY: ${STATION_API_KEY:-scwt-dev-station-key}
+      SEED_ON_STARTUP: "true"
+      SEED_DEMO_USER: "false"
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-in-production}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8080}
+    ports: ["127.0.0.1:8100:8000"]
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # Optional: run the simulated ESP32 carriage inside Docker too.
+  #   docker compose -f infra/docker-compose.yml --profile simulator up simulator
+  simulator:
+    build:
+      context: ../hardware-simulator
+      dockerfile: Dockerfile
+    profiles: ["simulator"]
+    restart: unless-stopped
+    environment:
+      MQTT_BROKER_HOST: mqtt
+      MQTT_BROKER_PORT: 1886
+      MQTT_USERNAME: backend
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-scwt-dev-broker-pass}
+      BACKEND_URL: http://backend:8000
+      STATION_API_KEY: ${STATION_API_KEY:-scwt-dev-station-key}
+      STATION_ID: st-001
+      STATION_CODE: ST-001
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  pgdata:

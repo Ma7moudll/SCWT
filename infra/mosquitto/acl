@@ -1,0 +1,30 @@
+# SCWT MQTT ACL — least privilege.
+#
+# backend: full control of the station topic tree (issues commands, consumes
+#          telemetry/events for ALL stations).
+# station: may ONLY consume its own command topics and publish its own
+#          telemetry/event topics. No cross-station access.
+#
+# The student app NEVER receives broker credentials and never connects to
+# MQTT — it talks to the backend API/WebSocket only.
+
+user backend
+topic readwrite scwt/stations/#
+
+# Station ST-001
+user station-ST-001
+topic read scwt/stations/ST-001/command
+topic read scwt/stations/ST-001/capture_request
+topic write scwt/stations/ST-001/state
+topic write scwt/stations/ST-001/sensor
+topic write scwt/stations/ST-001/event
+topic write scwt/stations/ST-001/heartbeat
+
+# Add more stations below (copy the block and replace ST-001 with the new code):
+# user station-ST-002
+# topic read scwt/stations/ST-002/command
+# topic read scwt/stations/ST-002/capture_request
+# topic write scwt/stations/ST-002/state
+# topic write scwt/stations/ST-002/sensor
+# topic write scwt/stations/ST-002/event
+# topic write scwt/stations/ST-002/heartbeat
