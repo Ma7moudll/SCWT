@@ -163,7 +163,3 @@ can run side by side with any other software on the same machine.
   `onnxruntime`.
 - Tests are green on a clean virtualenv: backend **199**, ai-service **83**
   (+4 skipped), hardware-simulator **30**.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
