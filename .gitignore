@@ -17,8 +17,14 @@ __pycache__/
 
 # env & secrets
 .env
-.env.*
+.env*.local
+!.env.example
 *.passwd
+infra/mosquitto/passwd
+.dev-jwt-secret
+.dev-mosquitto.acl
+.dev-*.log
+.runlogs/
 
 # OS
 .DS_Store
