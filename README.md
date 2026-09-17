@@ -97,13 +97,18 @@ footprint. Engineering notes: `docs/carriage-v1.md`.
 
 ## Screenshots
 
-The `web/` prototype (responsive, matches the mobile experience):
+Next.js web prototype (`web/`) plus the Flutter app (`mobile/`):
 
 | | |
 |---|---|
-| ![Home — welcome](screenshots/web-prototype.png) | ![Login](screenshots/web-login.png) |
+| ![Web prototype — welcome](screenshots/web-prototype.png) | ![Web prototype — login](screenshots/web-login.png) |
+| ![App — splash](screenshots/app-splash.png) | ![App — login](screenshots/app-login.png) |
+| ![App — home dashboard](screenshots/app-home.png) | ![App — station selection](screenshots/app-stations.png) |
+| ![App — history](screenshots/app-history.png) | ![App — rewards catalog](screenshots/app-rewards.png) |
+| ![App — profile](screenshots/app-profile.png) | ![App — home dashboard (demo user)](screenshots/app-home-demo.png) |
 
-Run it on port 3000: `cd web && npm install && npm run dev`.
+Web prototype on port 3000: `cd web && npm install && npm run dev`. Mobile
+app: `cd mobile && flutter run`.
 
 ## Modes
 
