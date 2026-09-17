@@ -1,7 +1,7 @@
-# Ecolamp Backend API Contract (client-facing)
+# SCWT Backend API Contract (client-facing)
 
-Ecolamp is a **standalone product**: the Flutter app talks ONLY to the
-**Ecolamp Backend** (FastAPI, shipped in this repository under `backend/`).
+SCWT is a **standalone product**: the Flutter app talks ONLY to the
+**SCWT Backend** (FastAPI, shipped in this repository under `backend/`).
 There is no dependency on any other project's source, database, broker, or AI
 service — communication is exclusively this HTTPS contract plus the
 deposit WebSocket.
@@ -50,7 +50,7 @@ Only terminal states carry points; **only the backend awards points**
 
 ### Student handoff QR (contract)
 
-Payload rendered by the app: `ECOLOOP:HANDOFF:<token>`. The token is
+Payload rendered by the app: `SCWT:HANDOFF:<token>`. The token is
 short-lived (~120 s), single-use (atomic consumption), worthless without the
 station's `X-Station-Key`. No long-lived secrets ever enter a QR.
 
